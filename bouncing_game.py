@@ -1,4 +1,4 @@
-import pygame
+""" import pygame
 import sys
 import random
 
@@ -26,7 +26,7 @@ font = pygame.font.Font(None, 36)
 #Clock to control the frame rate
 clock = pygame.time.Clock()
 
-#Initialize cariables for the game
+#Initialize variables for the game
 ball_pos = [WIDTH // 2, HEIGHT // 2]
 ball_speed = [random.uniform(2, 4), random.uniform(2, 4)] #Faster starting speed
 platform_pos = [WIDTH // 2 - PLATAFORM_WIDTH // 2, HEIGHT - PLATAFORM_HEIGHT - 10]
@@ -179,4 +179,4 @@ while game_running:
     clock.tick(FPS)
 
 #Quit the Pygame
-pygame.quit()
+pygame.quit() """

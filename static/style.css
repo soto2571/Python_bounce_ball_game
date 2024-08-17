@@ -1,0 +1,35 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000;
+}
+
+canvas {
+    border: 2px solid #fff;
+}
+
+.screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000;
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    background: #FF5733;
+    border: none;
+    color: #FFF;
+}
