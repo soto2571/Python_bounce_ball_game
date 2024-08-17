@@ -2,6 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d')
 const startScreen = document.getElementById('start-screen');
 const startButton = document.getElementById('start-button');
+const gameOverScreen = document.getElementById('game-over-screen');
+const restartButton = document.getElementById('restart-button');
 
 let gameStarted = false;
 
@@ -16,7 +18,7 @@ function drawBall(x, y, radius) {
 function drawPlatform(x, y, width, height, color) {
     ctx.beginPath();
     ctx.rect(x, y, width, height);
-    ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]}`;
+    ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
     ctx.fill();
     ctx.closePath();
 }
@@ -41,7 +43,8 @@ function updateGame() {
             drawText(`Level: ${data.current_level}`, 210, 20);
 
             if (data.game_status === 'game_over') {
-                drawText('Game Over!', canvas.width / 2 - 50, canvas.height / 2, '#F00');
+                gameOverScreen.style.display = 'block';  // Show game over screen
+                canvas.style.display = 'none';  // Hide canvas
             } else {
                 requestAnimationFrame(updateGame);
             }
@@ -53,6 +56,17 @@ function startGame() {
     canvas.style.display = 'block';
     gameStarted = true;
     updateGame()
+}
+
+function restartGame() {
+    fetch('/restart_game', { method: 'POST' })
+        .then(() => {
+            gameOverScreen.style.display = 'none';  // Hide game over screen
+            startScreen.style.display = 'none';     // Hide start screen if it's visible
+            canvas.style.display = 'block';         // Show canvas
+            gameStarted = true;                     // Set gameStarted to true
+            updateGame();                          // Restart the game
+        });
 }
 
 document.addEventListener('keydown', (event) => {
@@ -69,6 +83,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 startButton.addEventListener('click', startGame);
+restartButton.addEventListener('click', restartGame);
 
 document.addEventListener('keydown', (event) => {
     if (!gameStarted) {

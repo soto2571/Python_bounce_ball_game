@@ -19,7 +19,6 @@ lives = 3
 current_level = 1
 platform_color = [255, 165, 0]  # ORANGE
 
-
 def update_game_state():
     global ball_pos, ball_speed, platform_pos, score, lives, current_level, platform_color
 
@@ -61,7 +60,6 @@ def update_game_state():
 def index():
     return render_template('index.html')
 
-
 @app.route('/game_state', methods=['GET', 'POST'])
 def game_state():
     if request.method == 'POST':
@@ -71,8 +69,8 @@ def game_state():
         elif direction == 'right':
             platform_pos[0] += platform_speed
 
-        # Ensure the platform stayrs withing the screen boundaries
-        platform_pos[0] = max(0, min(platform_pos[0], WIDTH -  PLATFORM_WIDTH))
+        # Ensure the platform stays within the screen boundaries
+        platform_pos[0] = max(0, min(platform_pos[0], WIDTH - PLATFORM_WIDTH))
 
     game_status = update_game_state()
 
@@ -86,5 +84,17 @@ def game_state():
         'game_status': game_status
     })
 
+@app.route('/restart_game', methods=['POST'])
+def restart_game():
+    global ball_pos, ball_speed, platform_pos, score, lives, current_level, platform_color
+    ball_pos = [WIDTH // 2, HEIGHT // 2]
+    ball_speed = [random.uniform(2, 4), random.uniform(2, 4)]
+    platform_pos = [WIDTH // 2 - PLATFORM_WIDTH // 2, HEIGHT - PLATFORM_HEIGHT - 10]
+    score = 0
+    lives = 3
+    current_level = 1
+    platform_color = [255, 165, 0]  # ORANGE
+    return '', 204
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5004)
+    app.run(debug=True, port=5006)

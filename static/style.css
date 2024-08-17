@@ -33,3 +33,21 @@ button {
     border: none;
     color: #FFF;
 }
+
+#start-screen, #game-over_screen {
+    position: absolute;
+    top: 50%;
+    left: 50;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+#start-screen h1, #game-over-screen h1 {
+    font-size: 2em;
+}
+
+#start-button, #restart-button {
+    font-size: 1em;
+    padding: 10px 20px;
+    margin-top: 20px;
+}
