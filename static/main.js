@@ -31,26 +31,31 @@ function drawText(text, x, y, color = '#FFF') {
     ctx.fillText(text, x, y);
 }
 
-function updateGame() {
-    fetch('/game_state')
-        .then(response => response.json())
-        .then(data => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+function updateGame(timestamp) {
+    if (timestamp - lastFetchTime >= fetchInterval) {
+        lastFetchTime = timestamp;
+        fetch('/game_state')
+            .then(response => response.json())
+            .then(data => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            drawBall(data.ball_pos[0], data.ball_pos[1], 20);
-            drawPlatform(data.platform_pos[0], data.platform_pos[1], 100, 10, data.platform_color);
+                drawBall(data.ball_pos[0], data.ball_pos[1], 20);
+                drawPlatform(data.platform_pos[0], data.platform_pos[1], 100, 10, data.platform_color);
 
-            drawText(`Score: ${data.score}`, 10, 20);
-            drawText(`Lives: ${data.lives}`, 110, 20);
-            drawText(`Level: ${data.current_level}`, 210, 20);
+                drawText(`Score: ${data.score}`, 10, 20);
+                drawText(`Lives: ${data.lives}`, 110, 20);
+                drawText(`Level: ${data.current_level}`, 210, 20);
 
-            if (data.game_status === 'game_over') {
-                gameOverScreen.style.display = 'block';  // Show game over screen
-                canvas.style.display = 'none';  // Hide canvas
-            } else {
-                setTimeout(() => requestAnimationFrame(updateGame), updateInterval);
-            }
-        });
+                if (data.game_status === 'game_over') {
+                    gameOverScreen.style.display = 'block';  // Show game over screen
+                    canvas.style.display = 'none';  // Hide canvas
+                } else {
+                    requestAnimationFrame(updateGame);
+                }
+            });
+    } else {
+        requestAnimationFrame(updateGame);
+    }
 }
 
 function startGame() {
