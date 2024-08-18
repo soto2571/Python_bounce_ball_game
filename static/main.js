@@ -6,8 +6,8 @@ const gameOverScreen = document.getElementById('game-over-screen');
 const restartButton = document.getElementById('restart-button');
 
 let gameStarted = false;
-let lastUpdate = 0;
-let updateInterval = 1000 / 60; // 60 FPS
+let lastFetchTime = 0;
+let fetchInterval = 1000 / 60; // 60 FPS
 
 function drawBall(x, y, radius) {
     ctx.beginPath();
@@ -52,6 +52,10 @@ function updateGame(timestamp) {
                 } else {
                     requestAnimationFrame(updateGame);
                 }
+            })
+            .catch(error => {
+                console.error('Error fetching game state:', error);
+                requestAnimationFrame(updateGame);
             });
     } else {
         requestAnimationFrame(updateGame);
@@ -74,6 +78,9 @@ function restartGame() {
             canvas.style.display = 'block';         // Show canvas
             gameStarted = true;                     // Set gameStarted to true
             updateGame();                          // Restart the game
+        })
+        .catch(error => {
+            console.error('Error restarting game:', error);
         });
 }
 
@@ -88,6 +95,8 @@ document.addEventListener('keydown', (event) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ direction: direction })
+        }).catch(error => {
+            console.error('Error sending direction:', error);
         });
     }
 });
