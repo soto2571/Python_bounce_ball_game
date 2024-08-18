@@ -1,11 +1,13 @@
 const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d')
+const ctx = canvas.getContext('2d');
 const startScreen = document.getElementById('start-screen');
 const startButton = document.getElementById('start-button');
 const gameOverScreen = document.getElementById('game-over-screen');
 const restartButton = document.getElementById('restart-button');
 
 let gameStarted = false;
+let lastUpdate = 0;
+let updateInterval = 1000 / 60; // 60 FPS
 
 function drawBall(x, y, radius) {
     ctx.beginPath();
@@ -46,7 +48,7 @@ function updateGame() {
                 gameOverScreen.style.display = 'block';  // Show game over screen
                 canvas.style.display = 'none';  // Hide canvas
             } else {
-                requestAnimationFrame(updateGame);
+                setTimeout(() => requestAnimationFrame(updateGame), updateInterval);
             }
         });
 }
@@ -56,7 +58,7 @@ function startGame() {
     gameOverScreen.style.display = 'none';
     canvas.style.display = 'block';
     gameStarted = true;
-    updateGame()
+    updateGame();
 }
 
 function restartGame() {
@@ -69,7 +71,7 @@ function restartGame() {
             updateGame();                          // Restart the game
         });
 }
-// Start the game if it's not already started
+
 document.addEventListener('keydown', (event) => {
     if (!gameStarted) {
         startGame();

@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import random
+import logging
 
 app = Flask(__name__)
 
@@ -64,6 +65,7 @@ def index():
 def game_state():
     if request.method == 'POST':
         direction = request.json.get('direction')
+        logging.debug(f'Direction received: {direction}')
         if direction == 'left':
             platform_pos[0] -= platform_speed
         elif direction == 'right':
@@ -74,6 +76,8 @@ def game_state():
 
     game_status = update_game_state()
 
+    logging.debug(f'Game state: {game_status}')
+
     return jsonify({
         'ball_pos': ball_pos,
         'platform_pos': platform_pos,
@@ -81,7 +85,7 @@ def game_state():
         'lives': lives,
         'current_level': current_level,
         'platform_color': platform_color,
-        'game_status': game_status
+        'game_status': game_status        
     })
 
 @app.route('/restart_game', methods=['POST'])
@@ -95,6 +99,8 @@ def restart_game():
     current_level = 1
     platform_color = [255, 165, 0]  # ORANGE
     return '', 204
+
+logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == '__main__':
     app.run(debug=False, port=5000)
