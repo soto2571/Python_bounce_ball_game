@@ -53,6 +53,7 @@ function updateGame() {
 
 function startGame() {
     startScreen.style.display = 'none';
+    gameOverScreen.style.display = 'none';
     canvas.style.display = 'block';
     gameStarted = true;
     updateGame()
@@ -68,25 +69,21 @@ function restartGame() {
             updateGame();                          // Restart the game
         });
 }
-
+// Start the game if it's not already started
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    if (!gameStarted) {
+        startGame();
+    } else if (['ArrowLeft', 'ArrowRight'].includes(event.key)) {
         const direction = event.key === 'ArrowLeft' ? 'left' : 'right';
         fetch('/game_state', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ direction: direction})
+            body: JSON.stringify({ direction: direction })
         });
     }
 });
 
 startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', restartGame);
-
-document.addEventListener('keydown', (event) => {
-    if (!gameStarted) {
-        startGame();
-    }
-});

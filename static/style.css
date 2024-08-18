@@ -5,10 +5,36 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #000;
+    color: #FFF;
+    overflow: hidden;
+}
+
+.neon-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 0, 0, 0.6), rgba(0, 0, 256, 0.6));
+    filter:blur(50px);
+    animation: pulse 6s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }
 }
 
 canvas {
     border: 2px solid #fff;
+    display: none;
 }
 
 .screen {
@@ -17,33 +43,58 @@ canvas {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #000;
-}
-
-h1 {
-    font-size: 3em;
-    margin-bottom: 20px;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 1em;
-    cursor: pointer;
-    background: #FF5733;
-    border: none;
     color: #FFF;
 }
 
-#start-screen, #game-over_screen {
+h1 {
+    font-size: 2em;
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+    font-family: 'Press Start 2P', cursive;
+}
+
+h2 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    font-family: 'VT323', cursive;
+}
+
+p {
+    font-family: 'VT323', cursive;
+    font-size: 1.5em;
+    color: #FFF;
+    margin-top: 10px;    
+}
+
+button {
+    cursor: pointer;
+    border: 1px solid #f12222;
+    background-color: transparent;
+    height: 50px;
+    width: 200px;
+    color: #f12222;
+    font-size: 1.5em;
+    box-shadow: 0 6px 6px rgba(66, 64, 64, 0.6);
+    font-family: 'Press Start 2P', cursive;
+}
+
+ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    text-align: left;
+    font-family: 'VT323', cursive;
+}
+
+#start-screen, #game-over-screen {
     position: absolute;
     top: 50%;
-    left: 50;
+    left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
 }
 
 #start-screen h1, #game-over-screen h1 {
-    font-size: 2em;
+    font-size: 4em;
 }
 
 #start-button, #restart-button {

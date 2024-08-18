@@ -97,4 +97,4 @@ def restart_game():
     return '', 204
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5006)
+    app.run(debug=True, port=5000)

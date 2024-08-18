@@ -5,11 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bouncing Ball Game</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
 </head>
 <body>
+    <div class="neon-background"></div>
     <div id="start-screen" class="screen">
         <h1>Bouncing Ball Game</h1>
         <p>Press any key or click the button to start</p>
+        <div id="rules">
+            <h2>Game Rules:</h2>
+            <ul>
+                <li>Use the left and right arrow keys to move the platform.</li>
+                <li>Don't let the ball fall off the screen.</li>
+                <li>Each level increases the speed of the ball.</li>
+                <li>Collect points by bouncing the ball as long as possible</li>
+            </ul>
+        </div>
         <button id="start-button">Start Game</button>
     </div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
