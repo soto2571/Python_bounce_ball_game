@@ -121,4 +121,4 @@ def handle_restart_game():
     })
 
 if __name__ == '__main__':
-    socketio.run(debug=False, port=5000)
+    socketio.run(app, debug=False, port=5000)
