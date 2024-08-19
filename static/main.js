@@ -79,6 +79,10 @@ function restartGame() {
     socket.emit('restart_game');
 }
 
+window.addEventListener('beforeunload', () => {
+    socket.emit('disconnect');
+});
+
 document.addEventListener('keydown', (event) => {
     if (!gameStarted) {
         startGame();
