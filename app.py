@@ -1,10 +1,10 @@
 from flask import Flask, render_template, jsonify, request
+from flask_socketio import SocketIO, emit
 import random
 import logging
-from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Constants
 WIDTH, HEIGHT = 800, 600
@@ -63,51 +63,62 @@ def update_game_state():
 def index():
     return render_template('index.html')
 
-@app.route('/game_state', methods=['GET', 'POST'])
-def game_state():
-    if request.method == 'POST':
-        direction = request.json.get('direction')
-        logging.debug(f'Direction received: {direction}')
-        if direction == 'left':
-            platform_pos[0] -= platform_speed
-        elif direction == 'right':
-            platform_pos[0] += platform_speed
+@socketio.on('connect')
+def handle_connect():
+    emit('game_state', {
+        'ball_pos': ball_pos,
+        'platform_pos': platform_pos,
+        'score': score,
+        'lives': lives,
+        'current_level': current_level,
+        'platform_color': platform_color        
+    })
 
-        # Ensure the platform stays within the screen boundaries
-        platform_pos[0] = max(0, min(platform_pos[0], WIDTH - PLATFORM_WIDTH))
+@socketio.on('move_platform')
+def handle_move_platform(data):
+    direction = data.get('direction')
+    logging.debug(f'Direction received: {direction}')
+    if direction == 'left':
+        platform_pos[0] -= platform_speed
+    elif direction == 'right':
+        platform_pos[0] += platform_speed
 
+    # Ensure the platform stays on boundaries
+    platform_pos[0] = max(0, min(platform_pos[0], WIDTH - PLATFORM_WIDTH))
+
+@socketio.on('update_game')
+def handle_update_game():
     game_status = update_game_state()
-
     logging.debug(f'Game state: {game_status}')
-
-    return jsonify({
+    emit('game_state', {
         'ball_pos': ball_pos,
         'platform_pos': platform_pos,
         'score': score,
         'lives': lives,
         'current_level': current_level,
         'platform_color': platform_color,
-        'game_status': game_status        
+        'game_status': game_status
     })
 
-@app.route('/restart_game', methods=['POST'])
-def restart_game():
+@socketio.on('restart_game')
+def handle_restart_game():
     global ball_pos, ball_speed, platform_pos, score, lives, current_level, platform_color
-    ball_pos = [WIDTH // 2, HEIGHT // 2]
+    all_pos = [WIDTH // 2, HEIGHT // 2]
     ball_speed = [random.uniform(2, 4), random.uniform(2, 4)]
     platform_pos = [WIDTH // 2 - PLATFORM_WIDTH // 2, HEIGHT - PLATFORM_HEIGHT - 10]
     score = 0
     lives = 3
     current_level = 1
     platform_color = [255, 165, 0]  # ORANGE
-    return '', 204
-
-@app.after_request
-def add_header(response):
-    response.headers['Cache-Control'] = 'no-store'
-    return response
-
-logging.basicConfig(level=logging.DEBUG)
+    emit('game_state', {
+        'ball_pos': ball_pos,
+        'platform_pos': platform_pos,
+        'score': score,
+        'lives': lives,
+        'current_level': current_level,
+        'platform_color': platform_color,
+        'game_status': 'running'
+    })
 
 if __name__ == '__main__':
-    app.run(debug=False, port=5000)
+    socketio.run(debug=False, port=5000)

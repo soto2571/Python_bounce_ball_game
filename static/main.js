@@ -1,3 +1,5 @@
+const socket = io();
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const startScreen = document.getElementById('start-screen');
@@ -6,8 +8,8 @@ const gameOverScreen = document.getElementById('game-over-screen');
 const restartButton = document.getElementById('restart-button');
 
 let gameStarted = false;
-let lastFetchTime = 0;
-let fetchInterval = 1000 / 60; // 60 FPS
+let lastUpdateTime = 0;
+let updateInterval = 1000 / 60; // 60 FPS
 
 function drawBall(x, y, radius) {
     ctx.beginPath();
@@ -31,37 +33,40 @@ function drawText(text, x, y, color = '#FFF') {
     ctx.fillText(text, x, y);
 }
 
-function updateGame(timestamp) {
-    if (timestamp - lastFetchTime >= fetchInterval) {
-        lastFetchTime = timestamp;
-        fetch('/game_state')
-            .then(response => response.json())
-            .then(data => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+socket.on('game_state', (data) => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                drawBall(data.ball_pos[0], data.ball_pos[1], 20);
-                drawPlatform(data.platform_pos[0], data.platform_pos[1], 100, 10, data.platform_color);
+    drawBall(data.ball_pos[0], data.ball_pos[1], 20);
+    drawPlatform(data.platform_pos[0], data.platform_pos[1], 100, 10, data.platform_color);
 
-                drawText(`Score: ${data.score}`, 10, 20);
-                drawText(`Lives: ${data.lives}`, 110, 20);
-                drawText(`Level: ${data.current_level}`, 210, 20);
+    drawText(`Score: ${data.score}`, 10, 20);
+    drawText(`Lives: ${data.lives}`, 110, 20);
+    drawText(`Level ${data.current_level}`, 210, 20);
 
-                if (data.game_status === 'game_over') {
-                    gameOverScreen.style.display = 'block';  // Show game over screen
-                    canvas.style.display = 'none';  // Hide canvas
-                } else {
-                    requestAnimationFrame(updateGame);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching game state:', error);
-                requestAnimationFrame(updateGame);
-            });
+    if (data.game_status === 'game_over') {
+        gameOverScreen.style.display = 'block';
+        canvas.style.display = 'none';
+    } else {
+        requestAnimationFrame(updateGame);
+    }
+});
+
+// send platform move direction
+function sendDirection(direction) {
+    socket.emit('move_platform', { direction });
+}
+
+// Update game state
+function updateGame() {
+    if (Date.now() - lastUpdateTime >= updateInterval) {
+        lastUpdateTime = Date.now();
+        socket.emit('update_game');
     } else {
         requestAnimationFrame(updateGame);
     }
 }
 
+//start the game
 function startGame() {
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
@@ -71,17 +76,7 @@ function startGame() {
 }
 
 function restartGame() {
-    fetch('/restart_game', { method: 'POST' })
-        .then(() => {
-            gameOverScreen.style.display = 'none';  // Hide game over screen
-            startScreen.style.display = 'none';     // Hide start screen if it's visible
-            canvas.style.display = 'block';         // Show canvas
-            gameStarted = true;                     // Set gameStarted to true
-            updateGame();                          // Restart the game
-        })
-        .catch(error => {
-            console.error('Error restarting game:', error);
-        });
+    socket.emit('restart_game');
 }
 
 document.addEventListener('keydown', (event) => {
@@ -89,15 +84,7 @@ document.addEventListener('keydown', (event) => {
         startGame();
     } else if (['ArrowLeft', 'ArrowRight'].includes(event.key)) {
         const direction = event.key === 'ArrowLeft' ? 'left' : 'right';
-        fetch('/game_state', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ direction: direction })
-        }).catch(error => {
-            console.error('Error sending direction:', error);
-        });
+        sendDirection(direction)
     }
 });
 
