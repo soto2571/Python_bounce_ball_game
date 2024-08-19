@@ -1,8 +1,10 @@
 from flask import Flask, render_template, jsonify, request
 import random
 import logging
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Constants
 WIDTH, HEIGHT = 800, 600
@@ -99,6 +101,11 @@ def restart_game():
     current_level = 1
     platform_color = [255, 165, 0]  # ORANGE
     return '', 204
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store'
+    return response
 
 logging.basicConfig(level=logging.DEBUG)
 
